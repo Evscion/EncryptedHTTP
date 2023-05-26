@@ -10,7 +10,7 @@ from hashlib import sha256
 try:
     from typing import Literal
 except Exception:
-    from typing_extension import Literal
+    from typing_extensions import Literal
 
 class Auth:
     """ Base Class for Client-Side Authentication.\n
