@@ -35,7 +35,6 @@ Usage
 -----
 
 server.py:
----------
 
    |   from flask import Flask
    |   from HTTPAuth.server import Auth as ServerAuth
@@ -52,10 +51,9 @@ server.py:
    |   
    |   if __name__ == "__main__":
    |      app.run()
-
+   
 
 client.py:
----------
 
    |   from HTTPAuth.client import Auth as ClientAuth
    |   
