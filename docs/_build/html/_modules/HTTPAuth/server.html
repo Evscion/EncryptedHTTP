@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTTPAuth.server &mdash; HTTPAuth 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HTTPAuth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HTTPAuth</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HTTPAuth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">HTTPAuth.server</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for HTTPAuth.server</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Too lazy to write comments for explaining stuff so read the documentation.</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">make_response</span>
+<span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span> <span class="k">as</span> <span class="n">fer</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric</span> <span class="kn">import</span> <span class="n">padding</span>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64encode</span><span class="p">,</span> <span class="n">b64decode</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">HTTPAuth.server_utils</span> <span class="kn">import</span> <span class="n">Server</span> <span class="k">as</span> <span class="n">Util_Server</span>
+<span class="kn">from</span> <span class="nn">HTTPAuth.server_utils</span> <span class="kn">import</span> <span class="n">ExtraUtils</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="Auth"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.server.Auth">[docs]</a><span class="k">class</span> <span class="nc">Auth</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Base class for Server-Side HTTP Authentication.\n</span>
+
+<span class="sd">        HTTPAuth provides a quick and straightforward way to secure web applications during development. However, it is essential to highlight that using HTTPAuth for development purposes is not recommended due to inherent security vulnerabilities. This brief will outline the key reasons why HTTPAuth is considered insecure and the potential risks associated with its usage.\n</span>
+
+<span class="sd">        1. Lack of Proper Encryption\n</span>
+<span class="sd">        2. Lack of Server-Side Storage Security (Is replaceable with a custom Server-Side Storage Functions)\n</span>
+<span class="sd">        3. Lack of Session Management (Planned to Fix)\n</span>
+<span class="sd">        4. Limited Authentication Mechanisms\n</span>
+<span class="sd">        5. Susceptibility to Man-in-the-middle Attacks and Impersonations\n</span>
+
+<span class="sd">        Considering the aforementioned security risks, it is strongly advised not to rely solely on HTTPAuth for development purposes. While it may provide a convenient way to secure applications during initial stages, it should never be used in production environments. \n</span>
+
+
+<span class="sd">        This module is to be used for processing authentication requests sent by a client which uses/supports `HTTPAuth.client`</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters:\n</span>
+<span class="sd">              • app: `Flask` (The Flask App)\n</span>
+<span class="sd">              • store_tokens_func: `function` = save_token (The function to store tokens.)\n</span>
+<span class="sd">              • load_tokens_func: `function` = load_raw_data (The function to load tokens.)\n</span>
+<span class="sd">              • token_file: str = None (Only required if `store_tokens_func` and `load_tokens_func` are not defined. The file path where the user tokens are to be stored. Must be a `.json` file)\n</span>
+<span class="sd">              • server_name: str = &#39;Flask Test Server&#39; (Name of the server)\n</span>
+<span class="sd">              • server_location: str = &#39;None&#39; (Location of the Server)\n</span>
+
+<span class="sd">        Note: If a different function is assigned for `store_tokens_func`, then the function must contain one parameter which accepts the raw data. This raw data can be stored in any format as required.\n</span>
+
+<span class="sd">        Note: If a different function is assigned for `load_tokens_func`, then the function must return the data in the same format and as the raw data provided. It must be a dict with the following structure:\n</span>
+<span class="sd">                {\n</span>
+<span class="sd">                    token: \n</span>
+<span class="sd">                            {\n</span>
+<span class="sd">                                &#39;Key&#39;: key,\n</span>
+<span class="sd">                                &#39;Expiry&#39;: expiry\n</span>
+<span class="sd">                            }\n</span>
+<span class="sd">                }\n</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">store_tokens_func</span> <span class="o">=</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">save_token</span><span class="p">,</span> <span class="n">load_tokens_func</span> <span class="o">=</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">load_raw_data</span><span class="p">,</span> <span class="n">token_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">server_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Flask Test Server&quot;</span><span class="p">,</span> <span class="n">server_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Base class for Server-Side HTTP Authentication.\n</span>
+
+<span class="sd">            Is to be used for processing authentication requests sent by a client which uses/supports `HTTPAuth.client`</span>
+<span class="sd">        </span>
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • app: `Flask` (The Flask App)\n</span>
+<span class="sd">              • store_tokens_func: `function` = save_token (The function to store tokens. Please check the documentation for more important details about this parameter.)</span>
+<span class="sd">              • load_tokens_func: `function` = load_raw_data (The function to load tokens. Please check the documentation for more important details about this parameter.)</span>
+<span class="sd">              • token_file: str = None (Only required if `store_tokens_func` and `load_tokens_func` are not defined. The file path where the user tokens are to be stored. Must be a `.json` file)</span>
+<span class="sd">              • server_name: str = &#39;Flask Test Server&#39; (Name of the server)</span>
+<span class="sd">              • server_location: str = &#39;None&#39; (Location of the Server)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__auth_routes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/auth&quot;</span><span class="p">,</span> <span class="s2">&quot;/ca/get-key&quot;</span><span class="p">,</span> <span class="s2">&quot;/certificate/get&quot;</span><span class="p">,</span> <span class="s2">&quot;/certificate/create&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__store_tokens</span> <span class="o">=</span> <span class="n">store_tokens_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span> <span class="o">=</span> <span class="n">load_tokens_func</span>
+        <span class="k">if</span> <span class="n">store_tokens_func</span> <span class="o">==</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">save_token</span> <span class="ow">and</span> <span class="n">load_tokens_func</span> <span class="o">==</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">load_raw_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">token_file</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;When no token storage or load func is defined, token file needs to be passed in.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__token_file</span> <span class="o">=</span> <span class="n">token_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__server_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">server_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__server_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">server_location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    
+<div class="viewcode-block" id="Auth.update_logs"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.server.Auth.update_logs">[docs]</a>    <span class="k">def</span> <span class="nf">update_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y - %H:%M:%S&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">] : </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">[</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">] : </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s2">&quot;</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Base class for Server-Side Authentication &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Auth.register_auth_routes"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.server.Auth.register_auth_routes">[docs]</a>    <span class="k">def</span> <span class="nf">register_auth_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Registers the endpoints/routes for client authentication in the server side.\n</span>
+<span class="sd">            Is to be used for processing authentication requests sent by a client using `HTTPAuth.client`.\n</span>
+
+<span class="sd">            Example::\n</span>
+<span class="sd">                from flask import Flask</span>
+<span class="sd">                from HTTPAuth.server import Auth as ServerAuth</span>
+<span class="sd">                app = Flask(__name__)</span>
+<span class="sd">                token_file = &#39;./tokens.json&#39;</span>
+<span class="sd">                server = ServerAuth(app=app, token_file=token_file)</span>
+<span class="sd">                server.register_auth_routes()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">server_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server_name</span>
+        <span class="n">server_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server_location</span>
+
+        <span class="n">server</span> <span class="o">=</span> <span class="n">Util_Server</span><span class="p">(</span><span class="n">server_name</span><span class="p">,</span> <span class="n">server_location</span><span class="p">)</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="n">create_certificate</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">public_key_bytes</span><span class="p">)</span>
+
+        <span class="n">tokenfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token_file</span>
+
+        <span class="nd">@self</span><span class="o">.</span><span class="n">__app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/ca/get-key&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+        <span class="k">def</span> <span class="nf">get_ca_key</span><span class="p">():</span>
+            <span class="n">public_key_bytes</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">ca</span><span class="o">.</span><span class="n">public_key_bytes</span>
+            <span class="n">public_key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">public_key_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+            <span class="n">final_result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Public Key&#39;</span><span class="p">:</span> <span class="n">public_key_encoded</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CA Key requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> on endpoint &#39;/ca/get-key&#39;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">final_result_dict</span><span class="p">),</span> <span class="mi">200</span>
+            
+        <span class="nd">@self</span><span class="o">.</span><span class="n">__app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/certificate/get&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+        <span class="k">def</span> <span class="nf">get_cert</span><span class="p">():</span>
+            <span class="n">certificate_dict</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">certificate</span>
+            <span class="n">certificate_bytes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">certificate_dict</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+            <span class="n">certificate_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">certificate_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Server Certificate requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> on endpoint &#39;/certificate/get&#39;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            
+            <span class="n">final_result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Certificate&#39;</span><span class="p">:</span> <span class="n">certificate_encoded</span><span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">final_result_dict</span><span class="p">),</span> <span class="mi">200</span>
+
+        <span class="nd">@self</span><span class="o">.</span><span class="n">__app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/certificate/create&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+        <span class="k">def</span> <span class="nf">create_cert</span><span class="p">():</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span>
+            <span class="n">public_key_encoded</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;public_key&quot;</span><span class="p">)</span>
+            <span class="n">name_encoded</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">location_encoded</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">public_key_encoded</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">name_encoded</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                    <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Client Certificate Creation requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> failed due to &#39;Invalid Headers&#39; on endpoint &#39;/certificate/create&#39;&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid Headers&#39;</span><span class="p">}),</span> <span class="mi">400</span>
+            
+            <span class="n">public_key_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">public_key_encoded</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">name_encoded</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">location_encoded</span> <span class="ow">or</span> <span class="n">location_encoded</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">location_encoded</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+            <span class="n">certificate_dict</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">ca</span><span class="o">.</span><span class="n">create_client_certificate</span><span class="p">(</span><span class="n">public_key_bytes</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+
+            <span class="n">certificate_bytes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">certificate_dict</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+            <span class="n">certificate_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">certificate_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            
+            <span class="n">final_result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Certificate&#39;</span><span class="p">:</span> <span class="n">certificate_encoded</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Client Certificate Creation requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> on endpoint &#39;/certificate/create&#39;.</span><span class="se">\n</span><span class="s2">Name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">Location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">final_result_dict</span><span class="p">),</span> <span class="mi">200</span>
+
+        <span class="nd">@self</span><span class="o">.</span><span class="n">__app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/auth&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+        <span class="k">def</span> <span class="nf">auth</span><span class="p">():</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span>
+            <span class="n">certificate_encoded</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Certificate&quot;</span><span class="p">)</span>
+            <span class="n">symmetric_key_encoded</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Key&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">certificate_encoded</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">symmetric_key_encoded</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                    <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Client Certificate Creation requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> failed due to &#39;Invalid Headers&#39; on endpoint &#39;/auth&#39;&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid Headers&#39;</span><span class="p">}),</span> <span class="mi">400</span>
+            
+            <span class="n">certificate_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">certificate_encoded</span><span class="p">)</span>
+            <span class="n">certificate_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">certificate_bytes</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">validate_client_certificate</span><span class="p">(</span><span class="n">certificate_dict</span><span class="p">,</span> <span class="n">server</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                    <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Client Certificate Creation requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> failed due to &#39;Invalid or Expired Certificate&#39; on endpoint &#39;/auth&#39;&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid or Expired Certificate&#39;</span><span class="p">}),</span> <span class="mi">400</span>
+            
+            <span class="n">symmetric_key_encrypted</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">symmetric_key_encoded</span><span class="p">)</span>
+            <span class="n">symmetric_key</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">private_key</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span>
+                <span class="n">ciphertext</span><span class="o">=</span><span class="n">symmetric_key_encrypted</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="o">.</span><span class="n">PKCS1v15</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span> <span class="o">==</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">load_raw_data</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__token_file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">validate_loaded_raw_data</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Invalid Loaded Raw Data&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">generate_session_token</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="n">expiry</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">864000</span><span class="p">)</span>
+
+            <span class="n">raw_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">form_raw_data</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">symmetric_key</span><span class="p">,</span> <span class="n">expiry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span><span class="p">,</span> <span class="n">tokenfile</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__store_tokens</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token_file</span><span class="p">)</span>
+
+            <span class="n">token_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Authentication requested by </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="si">}</span><span class="s2"> on endpoint &#39;/auth&#39;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Token&#39;</span><span class="p">:</span> <span class="n">token_encoded</span><span class="p">}),</span> <span class="mi">200</span></div>
+
+<div class="viewcode-block" id="Auth.enable_logs"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.server.Auth.enable_logs">[docs]</a>    <span class="k">def</span> <span class="nf">enable_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">print_logs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Enables Log records for authentication requests.\n</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • log_file: `str` (The file path where the log records are to be stored)\n</span>
+<span class="sd">              • print_logs: `bool` = False (Bool indicating whether the log records are to be printed or not)\n</span>
+
+<span class="sd">            Example::\n</span>
+<span class="sd">                from HTTPAuth.server import Auth as ServerAuth</span>
+<span class="sd">                from flask import Flask</span>
+<span class="sd">                app = Flask(__name__)</span>
+<span class="sd">                server = ServerAuth()</span>
+<span class="sd">                server.register_auth_routes(app, token_file, server_name, server_location)</span>
+
+<span class="sd">            Warns:\n</span>
+<span class="sd">                Logs are already enabled!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="s2">&quot;Logs are already enabled!&quot;</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span> <span class="o">=</span> <span class="n">log_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span> <span class="o">=</span> <span class="n">print_logs</span></div>
+
+<div class="viewcode-block" id="Auth.disable_logs"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.server.Auth.disable_logs">[docs]</a>    <span class="k">def</span> <span class="nf">disable_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Enables Log records for authentication requests.\n</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • log_file: `str` (The file path where the log records are to be stored)\n</span>
+<span class="sd">              • print_logs: `bool` = False (Bool indicating whether the log records are to be printed or not)\n</span>
+
+<span class="sd">            Example::\n</span>
+<span class="sd">                from HTTPAuth.server import Auth as ServerAuth</span>
+<span class="sd">                from flask import Flask</span>
+<span class="sd">                app = Flask(__name__)</span>
+<span class="sd">                server = ServerAuth()</span>
+<span class="sd">                server.register_auth_routes(app, token_file, server_name, server_location)</span>
+
+<span class="sd">            Warns:\n</span>
+<span class="sd">                Logs are already disabled!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span><span class="p">:</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="s2">&quot;Logs are already disabled!&quot;</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logs</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__print_logs</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Auth.route"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.server.Auth.route">[docs]</a>    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers_to_accept</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">key_not_found</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;set value to None&#39;</span><span class="p">,</span> <span class="s1">&#39;return Invalid Headers to Client&#39;</span><span class="p">,</span> <span class="s1">&#39;raise Exception&#39;</span><span class="p">],</span> <span class="n">include_token</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Creates a Flask endpoint which decrypts the data being received by the endpoint as headers and encrypts the data being sent by the endpoint as data to the client.\n</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • rule: `str` (The endpoint)\n</span>
+<span class="sd">              • headers_to_accept: `list[str]` (The headers to receive and decrypt)\n</span>
+<span class="sd">              • key_not_found: (The action to perform when a key in `headers_to_accept` is not found in the request headers)\n</span>
+<span class="sd">                                • `set value to None`: Sets the corresponding key value to `None`\n</span>
+<span class="sd">                                • `return Invalid Headers to Client`: Returns an `Invalid Headers 400` error to the client\n</span>
+<span class="sd">                                • `raise Exception`: Raises an `Exception` and returns status code `500` to the client.\n</span>
+<span class="sd">              • include_token: `bool` (Indicates whether the token is to be included in the final headers or not)\n</span>
+
+<span class="sd">            Note: The view function when using `@server.route` should ALWAYS have the following three parameters:\n</span>
+<span class="sd">                    • headers: `dict` (Contains the decrypted headers)\n</span>
+<span class="sd">                    • *args: `tuple` (Contains the positional arguments passed to the view function when using `@app.route`)\n</span>
+<span class="sd">                    • **kwargs: `dict` (Contains the keyword arguments passed to the view function when using `@app.route`)\n</span>
+
+<span class="sd">            Note: The output of the view function of `@server.route` should always be a `dict` serialized to a `str` (preferrably using `json.dumps`). All the keys and values of the original dict should be `str`.\n</span>
+
+<span class="sd">            Example 1::\n</span>
+<span class="sd">                from HTTPAuth.server import Auth as ServerAuth</span>
+<span class="sd">                from flask import Flask</span>
+<span class="sd">                app = Flask(__name__)</span>
+<span class="sd">                server = ServerAuth(app=app, token_file=token_file)</span>
+<span class="sd">                server.register_auth_routes()</span>
+<span class="sd">                @server.route(rule=&quot;/&quot;, headers_to_accept=headers_to_accept, key_not_found=Literal[&#39;set value to None&#39;, &#39;return Invalid Headers to Client&#39;, &#39;raise Exception&#39;], include_token=include_token, methods=[&#39;GET&#39;, &#39;POST&#39;, ...])</span>
+<span class="sd">                def test(headers, *args, **kwargs): # The view function always has to have the given three parameters.</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    return json.dumps(data) #Each value of each key in the data (dict) variable should be a string.</span>
+
+<span class="sd">            Example 2::\n</span>
+<span class="sd">                from HTTPAuth.server import Auth as ServerAuth</span>
+<span class="sd">                from flask import Flask</span>
+<span class="sd">                app = Flask(__name__)</span>
+<span class="sd">                server = ServerAuth(app=app, token_file=token_file)</span>
+<span class="sd">                server.register_auth_routes()</span>
+<span class="sd">                @server.route(rule=&quot;/&lt;param&gt;&quot;, headers_to_accept=headers_to_accept, key_not_found=Literal[&#39;set value to None&#39;, &#39;return Invalid Headers to Client&#39;, &#39;raise Exception&#39;], include_token=include_token, methods=[&#39;GET&#39;, &#39;POST&#39;, ...])</span>
+<span class="sd">                def test(headers, *args, **kwargs): # The view function always has to have the given three parameters.</span>
+<span class="sd">                    param = kwargs[&#39;param&#39;]</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    return json.dumps(data) #Each value of each key in the data (dict) variable should be a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">decorator_func</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__auth_routes</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cant create a route with rule/route &#39;</span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">&#39; as it is already being used in authentication.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        
+            <span class="nd">@self</span><span class="o">.</span><span class="n">__app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span>
+                <span class="n">token_encoded</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Token&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">token_encoded</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid Headers&#39;</span><span class="p">}),</span> <span class="mi">400</span>
+                
+                <span class="n">token</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">token_encoded</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span> <span class="o">==</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">load_raw_data</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__token_file</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_tokens</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ExtraUtils</span><span class="o">.</span><span class="n">validate_loaded_raw_data</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                    <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Invalid Loaded Raw Data&quot;</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                
+                <span class="n">t</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid Token&#39;</span><span class="p">}),</span> <span class="mi">400</span>
+
+                <span class="n">expiry_str</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Expiry&quot;</span><span class="p">)</span>
+                <span class="n">expiry</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">expiry_str</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">expiry</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid Token&#39;</span><span class="p">}),</span> <span class="mi">400</span>
+                
+                <span class="n">symmetric_key_encoded</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Key&quot;</span><span class="p">)</span>
+                <span class="n">symmetric_key</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">symmetric_key_encoded</span><span class="p">)</span>
+                <span class="n">symmetric_fernet</span> <span class="o">=</span> <span class="n">fer</span><span class="p">(</span><span class="n">symmetric_key</span><span class="p">)</span>
+                
+                <span class="n">final_headers</span> <span class="o">=</span> <span class="p">{}</span>
+                
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">headers_to_accept</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                        <span class="n">val_encoded</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                        <span class="n">val_encrypted</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">val_encoded</span><span class="p">)</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">symmetric_fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">val_encrypted</span><span class="p">)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
+                        <span class="n">final_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="p">})</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">key_not_found</span> <span class="o">==</span> <span class="s1">&#39;raise Exception&#39;</span><span class="p">:</span>
+                            <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; was not found in the request headers.&quot;</span>
+                            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">key_not_found</span> <span class="o">==</span> <span class="s1">&#39;return Invalid Headers to Client&#39;</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;Error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid Headers&#39;</span><span class="p">})</span>
+                        <span class="k">elif</span> <span class="n">key_not_found</span> <span class="o">==</span> <span class="s1">&#39;set value to None&#39;</span><span class="p">:</span>
+                            <span class="n">final_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+                <span class="k">if</span> <span class="n">include_token</span><span class="p">:</span>
+                    <span class="n">final_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;Token&#39;</span><span class="p">:</span> <span class="n">token</span><span class="p">})</span>
+
+                <span class="n">response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">final_headers</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+                <span class="n">final_response</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">tval</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="n">tval</span> <span class="o">==</span> <span class="s2">&quot;&lt;class &#39;dict&#39;&gt;&quot;</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">tval</span> <span class="o">==</span> <span class="s2">&quot;&lt;class &#39;int&#39;&gt;&quot;</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+                    <span class="n">val_encrypted</span> <span class="o">=</span> <span class="n">symmetric_fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+                    <span class="n">val_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">val_encrypted</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+                    <span class="n">final_response</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">val_encoded</span><span class="p">})</span>
+
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">final_response</span><span class="p">),</span> <span class="mi">200</span>
+
+            <span class="k">return</span> <span class="n">route</span>
+
+        <span class="k">return</span> <span class="n">decorator_func</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">Auth</span><span class="o">.</span><span class="n">register_auth_routes</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ivosce.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

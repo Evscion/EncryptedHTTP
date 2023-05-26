@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTTPAuth.client &mdash; HTTPAuth 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HTTPAuth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HTTPAuth</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HTTPAuth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">HTTPAuth.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for HTTPAuth.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span> <span class="k">as</span> <span class="n">fer</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives</span> <span class="kn">import</span> <span class="n">serialization</span><span class="p">,</span> <span class="n">hashes</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric</span> <span class="kn">import</span> <span class="n">padding</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric</span> <span class="kn">import</span> <span class="n">rsa</span>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64encode</span><span class="p">,</span> <span class="n">b64decode</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha256</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<div class="viewcode-block" id="Auth"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.client.Auth">[docs]</a><span class="k">class</span> <span class="nc">Auth</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Base Class for Client-Side Authentication.\n</span>
+
+<span class="sd">        This module is trying to imitate how HTTPS works without actually using it.</span>
+
+<span class="sd">        HTTPAuth provides a quick and straightforward way to secure web applications during development. It allows for easy encrypted communication between a server and a local client and can be easily integrated in your current Flask app.\n</span>
+<span class="sd">        </span>
+<span class="sd">        However, it is essential to highlight that using HTTPAuth for development purposes is not recommended due to inherent security vulnerabilities. Here are some potential security vulnerebilities.\n</span>
+
+<span class="sd">        1. Lack of Proper Encryption\n</span>
+<span class="sd">        2. Lack of Server-Side Storage Security (Is replaceable with a custom Server-Side Storage Functions)\n</span>
+<span class="sd">        3. Lack of Session Management (Planned to Fix)\n</span>
+<span class="sd">        4. Limited Authentication Mechanisms\n</span>
+<span class="sd">        5. Susceptibility to Man-in-the-middle Attacks and Impersonations\n</span>
+
+<span class="sd">        Considering the aforementioned security risks, it is strongly advised to use HTTPAuth only for testing purposes.\n</span>
+
+<span class="sd">        This module is to be used for authentication requests to a server which uses/supports `HTTPAuth.server` </span>
+
+<span class="sd">        Parameters:\n</span>
+<span class="sd">              • url: `str` (The URL of the server)</span>
+<span class="sd">              • session_file: `str` (The file path where the client session will be stored. Must be a &#39;.JSON&#39; file.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">session_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Base Class for Client-Side Authentication.\n</span>
+
+<span class="sd">            Is to be used for authentication requests to a server which uses/supports `HTTPAuth.server`\n</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • url: `str` (The URL of the server)</span>
+<span class="sd">              • session_file: `str` (The file path where the client session will be stored. Must be a &#39;.JSON&#39; file.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">generate_private_key</span><span class="p">(</span><span class="n">public_exponent</span><span class="o">=</span><span class="mi">65537</span><span class="p">,</span> <span class="n">key_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span><span class="o">.</span><span class="n">public_key</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_key_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_key</span><span class="o">.</span><span class="n">public_bytes</span><span class="p">(</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">PublicFormat</span><span class="o">.</span><span class="n">PKCS1</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">certificate</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_public_key</span><span class="p">:</span> <span class="n">rsa</span><span class="o">.</span><span class="n">RSAPublicKey</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encryption_key</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionfile</span> <span class="o">=</span> <span class="n">session_file</span>
+
+    <span class="k">def</span> <span class="nf">__get_server_certificate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Internal Method to get the Server Certificate. &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__url</span><span class="si">}</span><span class="s2">/certificate/get&quot;</span><span class="p">)</span>
+        <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">certificate_encoded</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Certificate&quot;</span><span class="p">)</span>
+        <span class="n">certificate_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">certificate_encoded</span><span class="p">)</span>
+
+        <span class="n">certificate_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">certificate_bytes</span><span class="p">)</span>
+
+        <span class="n">server_public_key_str</span> <span class="o">=</span> <span class="n">certificate_dict</span><span class="p">[</span><span class="s1">&#39;Public Key&#39;</span><span class="p">]</span>
+        <span class="n">server_public_key_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">server_public_key_str</span><span class="p">)</span>
+
+        <span class="n">server_public_key</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_public_key</span><span class="p">(</span><span class="n">server_public_key_bytes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_public_key</span> <span class="o">=</span> <span class="n">server_public_key</span>
+
+        <span class="k">return</span> <span class="n">certificate_dict</span>
+
+    <span class="k">def</span> <span class="nf">__verify_server_certificate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_certificate</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Internal Method to Verify Server Certificate &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__url</span><span class="si">}</span><span class="s2">/ca/get-key&quot;</span><span class="p">)</span>
+        <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">public_key_encoded</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Public Key&quot;</span><span class="p">)</span>
+        <span class="n">public_key_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">public_key_encoded</span><span class="p">)</span>
+
+        <span class="n">public_key</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_public_key</span><span class="p">(</span><span class="n">public_key_bytes</span><span class="p">)</span>
+
+        <span class="n">ca_signature</span> <span class="o">=</span> <span class="n">server_certificate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CA Signature&quot;</span><span class="p">)</span>
+
+        <span class="n">server_certificate</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;CA Signature&quot;</span><span class="p">)</span>
+        <span class="n">server_certificate_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">server_certificate</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+
+        <span class="n">hashed_server_certificate</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">server_certificate_str</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+
+        <span class="n">ca_signature_decoded</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">ca_signature</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">public_key</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span>
+                <span class="n">signature</span><span class="o">=</span><span class="n">ca_signature_decoded</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">hashed_server_certificate</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="o">.</span><span class="n">PSS</span><span class="p">(</span>
+                    <span class="n">mgf</span><span class="o">=</span><span class="n">padding</span><span class="o">.</span><span class="n">MGF1</span><span class="p">(</span><span class="n">hashes</span><span class="o">.</span><span class="n">SHA256</span><span class="p">()),</span>
+                    <span class="n">salt_length</span><span class="o">=</span><span class="n">padding</span><span class="o">.</span><span class="n">PSS</span><span class="o">.</span><span class="n">MAX_LENGTH</span>
+                <span class="p">),</span>
+                <span class="n">algorithm</span><span class="o">=</span><span class="n">hashes</span><span class="o">.</span><span class="n">SHA256</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">__create_certificate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Internal Method to Create Client Certificate &quot;&quot;&quot;</span>
+        <span class="n">public_key_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_key_bytes</span>
+        <span class="n">public_key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">public_key_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">name_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span>
+            <span class="n">location_encoded</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">location_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__url</span><span class="si">}</span><span class="s2">/certificate/create&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;public_key&quot;</span><span class="p">:</span> <span class="n">public_key_encoded</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name_encoded</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="n">location_encoded</span><span class="p">})</span>
+        
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Unexpected Error: Server returned completely invalid data.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            
+            <span class="n">error</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Unexpected Error: Server returned invalid JSON data.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            
+            <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unexpected Error: Server returned - &#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+        <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">certificate_encoded</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Certificate&quot;</span><span class="p">)</span>
+        <span class="n">certificate_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">certificate_encoded</span><span class="p">)</span>
+
+        <span class="n">certificate_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">certificate_bytes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">certificate</span> <span class="o">=</span> <span class="n">certificate_dict</span>
+
+<div class="viewcode-block" id="Auth.auth"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.client.Auth.auth">[docs]</a>    <span class="k">def</span> <span class="nf">auth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Authenticates the Client with the Server and establishes a secure connection.\n</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • name: `str` (Name of the Client)\n</span>
+<span class="sd">              • location: `str` = &#39;None&#39; (Location of the Client)\n</span>
+
+<span class="sd">            Example::\n</span>
+<span class="sd">              from HTTPAuth.client import Auth as ClientAuth</span>
+<span class="sd">              client = ClientAuth(url, session_file)</span>
+<span class="sd">              client.auth(name, location)</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="n">server_certificate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_server_certificate</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__verify_server_certificate</span><span class="p">(</span><span class="n">server_certificate</span><span class="p">):</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Unexpected Error: Server returned invalid certificate.&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__create_certificate</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+        
+        <span class="n">symmetric_key</span> <span class="o">=</span> <span class="n">fer</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+        <span class="n">symmetric_key_encrypted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_public_key</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span>
+            <span class="n">plaintext</span><span class="o">=</span><span class="n">symmetric_key</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="o">.</span><span class="n">PKCS1v15</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">symmetric_key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">symmetric_key_encrypted</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">certificate_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">certificate</span>
+        <span class="n">certificate_bytes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">certificate_dict</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">certificate_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">certificate_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__url</span><span class="si">}</span><span class="s2">/auth&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Certificate&#39;</span><span class="p">:</span> <span class="n">certificate_encoded</span><span class="p">,</span> <span class="s1">&#39;Key&#39;</span><span class="p">:</span> <span class="n">symmetric_key_encoded</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Unexpected Error: Server returned completely invalid data.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            
+            <span class="n">error</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Unexpected Error: Server returned invalid JSON data.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            
+            <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unexpected Error: Server returned - &#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        
+        <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">token_encoded</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Token&quot;</span><span class="p">)</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">token_encoded</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">encryption_key</span> <span class="o">=</span> <span class="n">symmetric_key</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__auth</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span></div>
+
+<div class="viewcode-block" id="Auth.save_session"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.client.Auth.save_session">[docs]</a>    <span class="k">def</span> <span class="nf">save_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">passphrase</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;passphrase&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Saves the current Client status/session in the session file.</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • passphrase: `bytes` = b&quot;passphrase&quot; (Passphrase to decode the private key before converting it to `bytes`)\n</span>
+<span class="sd">        </span>
+<span class="sd">            Example::\n</span>
+<span class="sd">              from HTTPAuth.client import Auth as ClientAuth</span>
+<span class="sd">              client = ClientAuth(url, session_file)</span>
+<span class="sd">              # Optional: Authorize the client using `client.auth()`</span>
+<span class="sd">              client.save_session(passphrase)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">private_key_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span><span class="o">.</span><span class="n">private_bytes</span><span class="p">(</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">PrivateFormat</span><span class="o">.</span><span class="n">PKCS8</span><span class="p">,</span>
+            <span class="n">encryption_algorithm</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">BestAvailableEncryption</span><span class="p">(</span><span class="n">passphrase</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">private_key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">private_key_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="n">public_key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_key_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="n">server_public_key_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_public_key</span><span class="o">.</span><span class="n">public_bytes</span><span class="p">(</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="n">serialization</span><span class="o">.</span><span class="n">PublicFormat</span><span class="o">.</span><span class="n">PKCS1</span>
+        <span class="p">)</span>
+
+        <span class="n">server_public_key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">server_public_key_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="n">key_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encryption_key</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="n">passphrase_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">passphrase</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Public Key&quot;</span><span class="p">:</span> <span class="n">public_key_encoded</span><span class="p">,</span>
+            <span class="s2">&quot;Private Key&quot;</span><span class="p">:</span> <span class="n">private_key_encoded</span><span class="p">,</span>
+            <span class="s2">&quot;Server Public Key&quot;</span><span class="p">:</span> <span class="n">server_public_key_encoded</span><span class="p">,</span>
+            <span class="s2">&quot;Certificate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">certificate</span><span class="p">,</span>
+            <span class="s2">&quot;Encryption Key&quot;</span><span class="p">:</span> <span class="n">key_encoded</span><span class="p">,</span>
+            <span class="s2">&quot;Token&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+            <span class="s2">&quot;Passphrase&quot;</span><span class="p">:</span> <span class="n">passphrase_encoded</span><span class="p">,</span>
+            <span class="s2">&quot;Auth&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__auth</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessionfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Auth.load_session"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.client.Auth.load_session">[docs]</a>    <span class="k">def</span> <span class="nf">load_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Loads the saved session from the session file.</span>
+
+<span class="sd">            Example::\n</span>
+<span class="sd">              from HTTPAuth.client import Auth as ClientAuth</span>
+<span class="sd">              client = ClientAuth(url, session_file)</span>
+<span class="sd">              client.load_session()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessionfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;No Session Stored&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__auth</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Auth&quot;</span><span class="p">)</span>
+        
+        <span class="n">public_key_encoded</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Public Key&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_key_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">public_key_encoded</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_key</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_public_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_key_bytes</span><span class="p">)</span>
+
+        <span class="n">private_key_encoded</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Private Key&quot;</span><span class="p">)</span>
+        <span class="n">passphrase_encoded</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Passphrase&quot;</span><span class="p">)</span>
+        
+        <span class="n">private_key_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">private_key_encoded</span><span class="p">)</span>
+        <span class="n">passphrase</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">passphrase_encoded</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_private_key</span><span class="p">(</span><span class="n">private_key_bytes</span><span class="p">,</span> <span class="n">passphrase</span><span class="p">)</span>
+
+        <span class="n">server_public_key_encoded</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Server Public Key&quot;</span><span class="p">)</span>
+
+        <span class="n">server_public_key_bytes</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">server_public_key_encoded</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_public_key</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_public_key</span><span class="p">(</span><span class="n">server_public_key_bytes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">certificate</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Certificate&quot;</span><span class="p">)</span>
+
+        <span class="n">key_encoded</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Encryption Key&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">encryption_key</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">key_encoded</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Token&quot;</span><span class="p">)</span></div>
+            
+<div class="viewcode-block" id="Auth.make_request"><a class="viewcode-back" href="../../HTTPAuth.html#HTTPAuth.client.Auth.make_request">[docs]</a>    <span class="k">def</span> <span class="nf">make_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Makes a secure request to the server by encrypting the headers being sent to the server and decrypting the data received from the server.\n</span>
+
+<span class="sd">            Parameters:\n</span>
+<span class="sd">              • method: `Literal[&#39;GET&#39;, &#39;OPTIONS&#39;, &#39;HEAD&#39;, &#39;POST, &#39;PUT&#39;, &#39;PATCH&#39;, &#39;DELETE&#39;]` (The method to make the request with)\n</span>
+<span class="sd">              • endpoint: `str` (The endpoint to make a request to)\n</span>
+<span class="sd">              • headers: `dict` (The headers received to send to the server)\n</span>
+<span class="sd">            </span>
+<span class="sd">            Example::\n</span>
+<span class="sd">                from HTTPAuth.client import Auth as ClientAuth</span>
+<span class="sd">                client = ClientAuth(url, session_file)</span>
+<span class="sd">                client.auth(name, location)</span>
+<span class="sd">                response: dict = client.make_request(&#39;GET&#39;, endpoint, headers)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__auth</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Client not authenticated with Server.&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        
+        <span class="n">symmetric_fernet</span> <span class="o">=</span> <span class="n">fer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encryption_key</span><span class="p">)</span>
+
+        <span class="n">final_headers</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">val_encrypted</span> <span class="o">=</span> <span class="n">symmetric_fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="n">val_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">val_encrypted</span><span class="p">)</span>      
+            <span class="n">final_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">val_encoded</span><span class="p">})</span>
+
+        <span class="n">token_encoded</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">final_headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Token&quot;</span><span class="p">:</span> <span class="n">token_encoded</span><span class="p">})</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__url</span><span class="si">}{</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">final_headers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">status_code</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="n">response_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="k">if</span> <span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response_text</span><span class="p">)</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">)</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error returned status code &#39;</span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&#39; with error &#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">err1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Server returned status code &#39;</span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&#39; with completely invalid response.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response_text</span><span class="p">)</span>
+            <span class="n">final_response_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val_encoded</span> <span class="ow">in</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">val_encrypted</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">val_encoded</span><span class="p">)</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">symmetric_fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">val_encrypted</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
+
+                <span class="n">final_response_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="p">})</span>
+            <span class="k">return</span> <span class="n">final_response_dict</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ivosce.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
