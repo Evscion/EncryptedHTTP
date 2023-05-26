@@ -2,9 +2,11 @@
 Documentation for the HTTPAuth Package.
 
 **Introduction**
+
 The HTTPAuth package is designed to provide a secure and encrypted communication channel between a server and a local client using the HTTP protocol. Inspired by the principles of HTTPS, this package imitates its functionality to ensure confidentiality and integrity of data transmitted over an insecure network. By leveraging cryptographic algorithms and secure authentication mechanisms, HTTPAuth enables developers to establish a trusted connection between the server and client, protecting sensitive information from unauthorized access and tampering. The HTTPAuth package uses strong encryption methods to ensure that data transferred between a server and a local client cannot be accessed by a third-part.
 
 **Precautions**
+
 While HTTPAuth enhances security within the confines of the HTTP protocol, it’s important to remember that it does not offer the same level of security as the established HTTPS standard, which provides additional safeguards against various attacks and ensures trust through certificate authorities.
 
 A few problems yet to fixed in the HTTPAuth package are as follows:
