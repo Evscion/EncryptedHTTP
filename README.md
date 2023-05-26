@@ -103,4 +103,4 @@ This package is released under the MIT License. See the LICENSE file for more in
 
 # Contact
 
-For any problems please contact on my discord - Ivosce#2910 or mail - ivoscev@gmail.com
+For any problems please contact me on my discord - Ivosce#2910 or mail - ivoscev@gmail.com
