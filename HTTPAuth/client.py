@@ -16,14 +16,17 @@ class Auth:
               • url: `str` (The URL of the server)
               • session_file: `str` (The file path where the client session will be stored. Must be a '.JSON' file.)
     """
-    def __init__(self, url: str, session_file: str) -> None:
+    def __init__(self, url: str, session_file: str):
         """ Base Class for Client-Side Authentication.\n
 
             Is to be used for authentication requests to a server which uses/supports `HTTPAuth.server`\n
 
             Parameters:\n
-              • url: `str` (The URL of the server)
-              • session_file: `str` (The file path where the client session will be stored. Must be a '.JSON' file.)
+              • url: `str` (The URL of the server)\n
+              • session_file: `str` (The file path where the client session will be stored. Must be a '.JSON' file.)\n
+
+            Returns:\n
+              • `None`\n
         """
         self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
         self.__url = url
@@ -38,8 +41,12 @@ class Auth:
         self.token: str = None
         self.sessionfile = session_file
 
-    def __get_server_certificate(self) -> dict[str, str]:
-        """ Internal Method to get the Server Certificate. """
+    def __get_server_certificate(self):
+        """ Internal Method to get the Server Certificate.\n
+
+            Returns:\n
+              • `dict[str, str]`\n
+        """
         response = requests.get(f"{self.__url}/certificate/get")
         response_dict: dict = json.loads(response.text)
 
@@ -57,8 +64,15 @@ class Auth:
 
         return certificate_dict
 
-    def __verify_server_certificate(self, server_certificate: dict[str, str]) -> bool:
-        """ Internal Method to Verify Server Certificate """
+    def __verify_server_certificate(self, server_certificate: dict[str, str]):
+        """ Internal Method to Verify Server Certificate.\n
+
+            Parameters:\n
+              • server_certificate: `dict[str, str]` (The decrypted certificate of the server)\n
+
+            Returns:\n
+              • `bool`\n
+        """
         response = requests.get(f"{self.__url}/ca/get-key")
         response_dict: dict = json.loads(response.text)
 
@@ -91,8 +105,16 @@ class Auth:
         else:
             return True
 
-    def __create_certificate(self, name: str, location: str = None) -> None:
-        """ Internal Method to Create Client Certificate """
+    def __create_certificate(self, name: str, location: str = "None"):
+        """ Internal Method to Create Client Certificate.\n
+
+            Parameters:\n
+              • name: `str` (The name of the client)
+              • location: `str` = 'None' (The location of the client)
+
+            Returns:\n
+              • `None`\n
+        """
         public_key_bytes = self.public_key_bytes
         public_key_encoded = b64encode(public_key_bytes).decode()
         name_encoded = b64encode(name.encode()).decode()
@@ -135,6 +157,9 @@ class Auth:
             Parameters:\n
               • name: `str` (Name of the Client)\n
               • location: `str` = 'None' (Location of the Client)\n
+
+            Returns:\n
+              • `None`\n
 
             Example::\n
               from HTTPAuth.client import Auth as ClientAuth
@@ -193,6 +218,9 @@ class Auth:
             Parameters:\n
               • passphrase: `bytes` = b"passphrase" (Passphrase to decode the private key before converting it to `bytes`)\n
         
+            Returns:\n
+              • `None`\n
+            
             Example::\n
               from HTTPAuth.client import Auth as ClientAuth
               client = ClientAuth(url, session_file)
@@ -235,6 +263,9 @@ class Auth:
 
     def load_session(self):
         """ Loads the saved session from the session file.
+
+            Returns:\n
+              • `None`
 
             Example::\n
               from HTTPAuth.client import Auth as ClientAuth
@@ -282,6 +313,9 @@ class Auth:
               • method: `Literal['GET', 'OPTIONS', 'HEAD', 'POST, 'PUT', 'PATCH', 'DELETE']` (The method to make the request with)\n
               • endpoint: `str` (The endpoint to make a request to)\n
               • headers: `dict` (The headers received to send to the server)\n
+
+            Returns:\n
+              • `dict[str, str]`
             
             Example::\n
                 from HTTPAuth.client import Auth as ClientAuth
