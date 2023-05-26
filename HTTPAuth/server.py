@@ -307,7 +307,7 @@ class Auth:
         self.__log_file = None
         self.__print_logs = False
 
-    def route(self, rule: str, headers_to_accept: list[str], key_not_found, include_token: bool = False, **options):
+    def route(self, rule: str, headers_to_accept: list, key_not_found, include_token: bool = False, **options):
         """ Creates a Flask endpoint which decrypts the data being received by the endpoint as headers and encrypts the data being sent by the endpoint as data to the client.\n
 
             Parameters:\n
