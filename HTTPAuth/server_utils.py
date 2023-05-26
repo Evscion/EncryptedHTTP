@@ -14,7 +14,7 @@ class CA:
 
         Not meant to be imported for use aside from inside the module.
     """
-    def __init__(self) -> None:
+    def __init__(self):
         self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
         self.public_key = self.private_key.public_key()
         self.public_key_bytes = self.public_key.public_bytes(
@@ -22,13 +22,16 @@ class CA:
             format=serialization.PublicFormat.PKCS1
         )
 
-    def create_server_certificate(self, public_key_bytes: bytes, name: str, location: str = 'None') -> dict[str, str]:
+    def create_server_certificate(self, public_key_bytes: bytes, name: str, location: str = 'None'):
         """ Creates a certificate for the Server.\n
             
             Parameters:\n
               • public_key_bytes: `bytes` (The server's public key in `bytes`)\n
               • name: `str` (Name of the server)\n
               • location: `str` (Location of the server)\n
+
+            Returns:\n
+              • `dict[str]`\n
 
             Example::\n
               from HTTPAuth.server_utils.ca import CA
@@ -72,6 +75,9 @@ class CA:
               • public_key_bytes: `bytes` (The client's public key in `bytes`)\n
               • name: `str` (Name of the client)\n
               • location: `str` (Location of the client)\n
+
+            Returns:\n
+              • `dict[str]`\n
 
             Example::\n
               from HTTPAuth.server_utils.ca import CA
@@ -125,11 +131,14 @@ class Server:
         self.name = name
         self.location = location
 
-    def create_certificate(self, server_public_key_bytes: bytes) -> None:
+    def create_certificate(self, server_public_key_bytes: bytes):
         """ Creates a certificate for the server from the CA.\n
          
             Parameters:\n
               • server_public_key_bytes: `bytes` (The server's public key in `bytes`)\n
+
+            Returns:\n
+              • `None`
 
             Example::\n
               from HTTPAuth.server_utils.server import Server
@@ -146,6 +155,9 @@ class ExtraUtils:
             Parameters:\n
               • certificate: `dict[str, str]` (The decrypted client certificate in the form of a `dict`)\n
               • server: `Server` (The initialized `Server` object)\n
+
+            Returns:\n
+              • `bool`\n
         """
         expiry_str: str = certificate.get("Expiry")
         expiry: float = float(expiry_str)
@@ -183,6 +195,9 @@ class ExtraUtils:
 
             Parameters:\n
               • length: `int` (The desired length of the session token)\n
+
+            Returns:\n
+              • `str`
         """
         s = list(string.ascii_letters + string.digits)
 
@@ -195,12 +210,15 @@ class ExtraUtils:
 
         return token
 
-    def load_raw_data(tokenfile: str) -> dict:
+    def load_raw_data(tokenfile: str):
         """ Default function to load raw data from the token file.\n
             Can be replaced with a custom function to load raw data while intializing `Server` object.\n
 
             Parameters:\n
               • tokenfile: `str` (The file path where the user tokens are stored.)\n
+
+            Returns:\n
+              • `dict`
         """
         with open(tokenfile, "r") as f:
             data: dict = json.load(f)
@@ -211,7 +229,11 @@ class ExtraUtils:
             Can be replaced with a custom function to save tokens while intializing `Server` object.\n
 
             Parameters:\n
-              • tokenfile: `str` (The file path where the user tokens are stored.)\n
+              • raw_data: `dict` (The raw data to be stored)
+              • tokenfile: `str` (The file path where the user tokens are stored)\n
+
+            Returns:\n
+              • `None`
         """
         with open(tokenfile, "w") as f:
             json.dump(raw_data, f, indent=4)
@@ -221,6 +243,9 @@ class ExtraUtils:
 
             Parameters:\n
               • raw_data: `dict` (The raw data.)\n
+
+            Returns:\n
+              • `bool`\n
         """
         try:
             for key in raw_data:
@@ -235,7 +260,7 @@ class ExtraUtils:
         else:
             return True
 
-    def form_raw_data(token: str, symmetric_key: bytes, expiry: str, load_tokens_func, tokenfile) -> dict:
+    def form_raw_data(token: str, symmetric_key: bytes, expiry: str, load_tokens_func, tokenfile):
         """ Forms encrypted raw data from the loaded raw data.\n
 
             Parameters:\n
@@ -244,6 +269,9 @@ class ExtraUtils:
               • expiry: `str` (The expiry date of the user token)\n
               • load_tokens_func: `function` (The function assigned to load the tokens)\n
               • tokenfile: `str` (The file path where the user tokens are stored)\n
+
+            Returns:\n
+              • `dict`\n
         """
         if load_tokens_func == ExtraUtils.load_raw_data:
             d: dict = ExtraUtils.load_raw_data(tokenfile)
