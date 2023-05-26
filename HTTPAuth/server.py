@@ -5,6 +5,7 @@ from cryptography.fernet import Fernet as fer
 from cryptography.hazmat.primitives.asymmetric import padding
 from base64 import b64encode, b64decode
 import time
+from typing import Literal
 from HTTPAuth.server_utils import Server as Util_Server
 from HTTPAuth.server_utils import ExtraUtils
 import json
@@ -40,11 +41,14 @@ class Auth:
         
             Parameters:\n
               • app: `Flask` (The Flask App)\n
-              • store_tokens_func: `function` = save_token (The function to store tokens. Please check the documentation for more important details about this parameter.)
-              • load_tokens_func: `function` = load_raw_data (The function to load tokens. Please check the documentation for more important details about this parameter.)
-              • token_file: str = None (Only required if `store_tokens_func` and `load_tokens_func` are not defined. The file path where the user tokens are to be stored. Must be a `.json` file)
-              • server_name: str = 'Flask Test Server' (Name of the server)
-              • server_location: str = 'None' (Location of the Server)
+              • store_tokens_func: `function` = save_token (The function to store tokens. Please check the documentation for more important details about this parameter.)\n
+              • load_tokens_func: `function` = load_raw_data (The function to load tokens. Please check the documentation for more important details about this parameter.)\n
+              • token_file: str = None (Only required if `store_tokens_func` and `load_tokens_func` are not defined. The file path where the user tokens are to be stored. Must be a `.json` file)\n
+              • server_name: str = 'Flask Test Server' (Name of the server)\n
+              • server_location: str = 'None' (Location of the Server)\n
+
+            Returns:\n
+              • `None`\n
         """
         self.__auth_routes = ["/auth", "/ca/get-key", "/certificate/get", "/certificate/create"]
         self.__app = app
@@ -66,6 +70,9 @@ class Auth:
 
             Parameters:\n
               • entry: `str` (The log entry to record)\n
+
+            Returns:\n
+              • `None`
 
             Example::\n
                 from HTTPAuth.server import Auth as ServerAuth
@@ -94,6 +101,9 @@ class Auth:
     def register_auth_routes(self):
         """ Registers the endpoints/routes for client authentication in the server side.\n
             Is to be used for processing authentication requests sent by a client using `HTTPAuth.client`.\n
+
+            Returns:\n
+              • `None`
 
             Example::\n
                 from flask import Flask
@@ -249,6 +259,9 @@ class Auth:
               • log_file: `str` (The file path where the log records are to be stored)\n
               • print_logs: `bool` = False (Bool indicating whether the log records are to be printed or not)\n
 
+            Returns:\n
+              • `None`\n
+
             Example::\n
                 from HTTPAuth.server import Auth as ServerAuth
                 from flask import Flask
@@ -275,6 +288,9 @@ class Auth:
               • log_file: `str` (The file path where the log records are to be stored)\n
               • print_logs: `bool` = False (Bool indicating whether the log records are to be printed or not)\n
 
+            Returns:\n
+              • `None`
+
             Example::\n
                 from HTTPAuth.server import Auth as ServerAuth
                 from flask import Flask
@@ -294,7 +310,7 @@ class Auth:
         self.__log_file = None
         self.__print_logs = False
 
-    def route(self, rule: str, headers_to_accept: list[str], key_not_found: str,  include_token: bool = False, **options):
+    def route(self, rule: str, headers_to_accept: list[str], key_not_found: Literal['set value to None', 'return Invalid Headers to Client', 'raise Exception'], include_token: bool = False, **options):
         """ Creates a Flask endpoint which decrypts the data being received by the endpoint as headers and encrypts the data being sent by the endpoint as data to the client.\n
 
             Parameters:\n
@@ -313,6 +329,11 @@ class Auth:
 
             Note: The output of the view function of `@server.route` should always be a `dict` serialized to a `str` (preferrably using `json.dumps`). All the keys and values of the original dict should be `str`.\n
 
+            Returns:\n
+              • headers: `dict`
+              • args: `tuple`
+              • kwargs: `dict`
+            
             Example 1::\n
                 from HTTPAuth.server import Auth as ServerAuth
                 from flask import Flask
