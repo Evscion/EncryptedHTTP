@@ -94,7 +94,13 @@ response: dict = client.make_request(method=’GET’, endpoint=”/value”, he
 ```
 
 # Documentation
+
 For detailed documentation and examples, please refer to the HTTPAuth documentation at https://httpauth.readthedocs.io/en/latest/.
 
 # License
+
 This package is released under the MIT License. See the LICENSE file for more information.
+
+# Contact
+
+For any problems please contact on my discord - Ivosce#2910 or mail - ivoscev@gmail.com
