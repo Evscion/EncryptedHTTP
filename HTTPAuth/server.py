@@ -9,11 +9,6 @@ from HTTPAuth.server_utils import Server as Util_Server
 from HTTPAuth.server_utils import ExtraUtils
 import json
 
-try:
-    from typing import Literal
-except Exception:
-    from typing_extensions import Literal
-
 class Auth:
     """ Base class for Server-Side HTTP Authentication.\n
 
@@ -299,7 +294,7 @@ class Auth:
         self.__log_file = None
         self.__print_logs = False
 
-    def route(self, rule: str, headers_to_accept: list[str], key_not_found: Literal['set value to None', 'return Invalid Headers to Client', 'raise Exception'], include_token: bool = False, **options):
+    def route(self, rule: str, headers_to_accept: list[str], key_not_found: str,  include_token: bool = False, **options):
         """ Creates a Flask endpoint which decrypts the data being received by the endpoint as headers and encrypts the data being sent by the endpoint as data to the client.\n
 
             Parameters:\n
