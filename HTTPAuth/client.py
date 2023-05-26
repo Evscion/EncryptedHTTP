@@ -7,11 +7,6 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from base64 import b64encode, b64decode
 from hashlib import sha256
 
-try:
-    from typing import Literal
-except Exception:
-    from typing_extensions import Literal
-
 class Auth:
     """ Base Class for Client-Side Authentication.\n
     
@@ -280,7 +275,7 @@ class Auth:
 
         self.token = data.get("Token")
             
-    def make_request(self, method: Literal['GET', 'OPTIONS', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'], endpoint: str, headers: dict, **kwargs):
+    def make_request(self, method: str, endpoint: str, headers: dict, **kwargs):
         """ Makes a secure request to the server by encrypting the headers being sent to the server and decrypting the data received from the server.\n
 
             Parameters:\n
