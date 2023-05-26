@@ -35,6 +35,7 @@ Usage
 -----
 
 server.py:
+---------
 
    |   from flask import Flask
    |   from HTTPAuth.server import Auth as ServerAuth
@@ -46,14 +47,15 @@ server.py:
    |   
    |   @server.route(rule="/", headers_to_accept=['key'], key_not_found='return Invalid Headers to Client', include_token=False, methods=['GET'])
    |   def home(headers, *args, **kwargs):
-      |      # Do something with the headers
-      |      return json.dumps(data)
+   |      # Do something with the headers
+   |      return json.dumps(data)
    |   
    |   if __name__ == "__main__":
-      |      app.run()
+   |      app.run()
 
 
 client.py:
+---------
 
    |   from HTTPAuth.client import Auth as ClientAuth
    |   
