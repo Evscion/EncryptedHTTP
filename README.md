@@ -18,7 +18,7 @@ A few problems yet to fixed in the HTTPAuth package are as follows:
 
 # Installation
 
-`$pip install HTTPAuth`
+The repository should be cloned for installation but soon will be available on pip.
 
 # Usage
 
