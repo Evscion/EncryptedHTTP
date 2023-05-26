@@ -1,0 +1,893 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>HTTPAuth package &#8212; HTTPAuth 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'HTTPAuth';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">HTTPAuth 1.0.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/HTTPAuth.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>HTTPAuth package</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth.client">HTTPAuth.client module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth"><code class="docutils literal notranslate"><span class="pre">Auth</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.auth"><code class="docutils literal notranslate"><span class="pre">Auth.auth()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.load_session"><code class="docutils literal notranslate"><span class="pre">Auth.load_session()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.make_request"><code class="docutils literal notranslate"><span class="pre">Auth.make_request()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.save_session"><code class="docutils literal notranslate"><span class="pre">Auth.save_session()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth.server">HTTPAuth.server module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth"><code class="docutils literal notranslate"><span class="pre">Auth</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.disable_logs"><code class="docutils literal notranslate"><span class="pre">Auth.disable_logs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.enable_logs"><code class="docutils literal notranslate"><span class="pre">Auth.enable_logs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.register_auth_routes"><code class="docutils literal notranslate"><span class="pre">Auth.register_auth_routes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.route"><code class="docutils literal notranslate"><span class="pre">Auth.route()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.update_logs"><code class="docutils literal notranslate"><span class="pre">Auth.update_logs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth.server_utils">HTTPAuth.server_utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.CA"><code class="docutils literal notranslate"><span class="pre">CA</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.CA.create_client_certificate"><code class="docutils literal notranslate"><span class="pre">CA.create_client_certificate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.CA.create_server_certificate"><code class="docutils literal notranslate"><span class="pre">CA.create_server_certificate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils"><code class="docutils literal notranslate"><span class="pre">ExtraUtils</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.form_raw_data"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.form_raw_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.generate_session_token"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.generate_session_token()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.load_raw_data"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.load_raw_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.save_token"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.save_token()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.validate_client_certificate"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.validate_client_certificate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.validate_loaded_raw_data"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.validate_loaded_raw_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.Server"><code class="docutils literal notranslate"><span class="pre">Server</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.Server.create_certificate"><code class="docutils literal notranslate"><span class="pre">Server.create_certificate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth">Module contents</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="httpauth-package">
+<h1>HTTPAuth package<a class="headerlink" href="#httpauth-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-HTTPAuth.client">
+<span id="httpauth-client-module"></span><h2>HTTPAuth.client module<a class="headerlink" href="#module-HTTPAuth.client" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="HTTPAuth.client.Auth">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HTTPAuth.client.</span></span><span class="sig-name descname"><span class="pre">Auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.client.Auth" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base Class for Client-Side Authentication.</p>
+<p>This module is to be used for authentication requests to a server which uses/supports <cite>HTTPAuth.server</cite></p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>url: <cite>str</cite> (The URL of the server)</p></li>
+<li><p>session_file: <cite>str</cite> (The file path where the client session will be stored. Must be a ‘.JSON’ file.)</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.client.Auth.auth">
+<span class="sig-name descname"><span class="pre">auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.client.Auth.auth" title="Permalink to this definition">#</a></dt>
+<dd><p>Authenticates the Client with the Server and establishes a secure connection.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>name: <cite>str</cite> (Name of the Client)</p></li>
+<li><p>location: <cite>str</cite> = ‘None’ (Location of the Client)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.client</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ClientAuth</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ClientAuth</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session_file</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">auth</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.client.Auth.load_session">
+<span class="sig-name descname"><span class="pre">load_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.client.Auth.load_session" title="Permalink to this definition">#</a></dt>
+<dd><p>Loads the saved session from the session file.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.client</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ClientAuth</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ClientAuth</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session_file</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">load_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.client.Auth.make_request">
+<span class="sig-name descname"><span class="pre">make_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GET'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'OPTIONS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'HEAD'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'POST'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PATCH'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DELETE'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.client.Auth.make_request" title="Permalink to this definition">#</a></dt>
+<dd><p>Makes a secure request to the server by encrypting the headers being sent to the server and decrypting the data received from the server.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>method: <cite>Literal[‘GET’, ‘OPTIONS’, ‘HEAD’, ‘POST, ‘PUT’, ‘PATCH’, ‘DELETE’]</cite> (The method to make the request with)</p></li>
+<li><p>endpoint: <cite>str</cite> (The endpoint to make a request to)</p></li>
+<li><p>headers: <cite>dict</cite> (The headers received to send to the server)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.client</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ClientAuth</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ClientAuth</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session_file</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">auth</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+<span class="n">response</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.client.Auth.save_session">
+<span class="sig-name descname"><span class="pre">save_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">passphrase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">b'passphrase'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.client.Auth.save_session" title="Permalink to this definition">#</a></dt>
+<dd><p>Saves the current Client status/session in the session file.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>passphrase: <cite>bytes</cite> = b”passphrase” (Passphrase to decode the private key before converting it to <cite>bytes</cite>)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.client</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ClientAuth</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ClientAuth</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session_file</span><span class="p">)</span>
+<span class="c1"># Optional: Authorize the client using `client.auth()`</span>
+<span class="n">client</span><span class="o">.</span><span class="n">save_session</span><span class="p">(</span><span class="n">passphrase</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-HTTPAuth.server">
+<span id="httpauth-server-module"></span><h2>HTTPAuth.server module<a class="headerlink" href="#module-HTTPAuth.server" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="HTTPAuth.server.Auth">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HTTPAuth.server.</span></span><span class="sig-name descname"><span class="pre">Auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_tokens_func=&lt;function</span> <span class="pre">ExtraUtils.save_token&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_tokens_func=&lt;function</span> <span class="pre">ExtraUtils.load_raw_data&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_file:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Flask</span> <span class="pre">Test</span> <span class="pre">Server'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_location:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server.Auth" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for Server-Side HTTP Authentication.</p>
+<p>This module is to be used for processing authentication requests sent by a client which uses/supports <cite>HTTPAuth.client</cite></p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>app: <cite>Flask</cite> (The Flask App)</p></li>
+<li><p>store_tokens_func: <cite>function</cite> = save_token (The function to store tokens.)</p></li>
+<li><p>load_tokens_func: <cite>function</cite> = load_raw_data (The function to load tokens.)</p></li>
+<li><p>token_file: str = None (Only required if <cite>store_tokens_func</cite> and <cite>load_tokens_func</cite> are not defined. The file path where the user tokens are to be stored. Must be a <cite>.json</cite> file)</p></li>
+<li><p>server_name: str = ‘Flask Test Server’ (Name of the server)</p></li>
+<li><p>server_location: str = ‘None’ (Location of the Server)</p></li>
+</ul>
+</div></blockquote>
+<p>Note: If a different function is assigned for <cite>store_tokens_func</cite>, then the function must contain one parameter which accepts the raw data. This raw data can be stored in any format as required.</p>
+<p>Note: If a different function is assigned for <cite>load_tokens_func</cite>, then the function must return the data in the same format and as the raw data provided. It must be a dict with the following structure:</p>
+<blockquote>
+<div><p>{</p>
+<blockquote>
+<div><p>token:</p>
+<blockquote>
+<div><p>{</p>
+<blockquote>
+<div><p>‘Key’: key,</p>
+<p>‘Expiry’: expiry</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server.Auth.disable_logs">
+<span class="sig-name descname"><span class="pre">disable_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server.Auth.disable_logs" title="Permalink to this definition">#</a></dt>
+<dd><p>Enables Log records for authentication requests.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>log_file: <cite>str</cite> (The file path where the log records are to be stored)</p></li>
+<li><p>print_logs: <cite>bool</cite> = False (Bool indicating whether the log records are to be printed or not)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ServerAuth</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">ServerAuth</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="o">=</span><span class="n">token_file</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_auth_routes</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="p">,</span> <span class="n">server_name</span><span class="p">,</span> <span class="n">server_location</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Warns:</p>
+<blockquote>
+<div><p>Logs are already disabled!</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server.Auth.enable_logs">
+<span class="sig-name descname"><span class="pre">enable_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server.Auth.enable_logs" title="Permalink to this definition">#</a></dt>
+<dd><p>Enables Log records for authentication requests.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>log_file: <cite>str</cite> (The file path where the log records are to be stored)</p></li>
+<li><p>print_logs: <cite>bool</cite> = False (Bool indicating whether the log records are to be printed or not)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ServerAuth</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">ServerAuth</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="o">=</span><span class="n">token_file</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_auth_routes</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="p">,</span> <span class="n">server_name</span><span class="p">,</span> <span class="n">server_location</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Warns:</p>
+<blockquote>
+<div><p>Logs are already enabled!</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server.Auth.register_auth_routes">
+<span class="sig-name descname"><span class="pre">register_auth_routes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server.Auth.register_auth_routes" title="Permalink to this definition">#</a></dt>
+<dd><p>Registers the endpoints/routes for client authentication in the server side.</p>
+<p>Is to be used for processing authentication requests sent by a client using <cite>HTTPAuth.client</cite>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">HTTPAuth.server</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ServerAuth</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">token_file</span> <span class="o">=</span> <span class="s1">&#39;./tokens.json&#39;</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">ServerAuth</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="o">=</span><span class="n">token_file</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_auth_routes</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server.Auth.route">
+<span class="sig-name descname"><span class="pre">route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers_to_accept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_not_found</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'set</span> <span class="pre">value</span> <span class="pre">to</span> <span class="pre">None'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'return</span> <span class="pre">Invalid</span> <span class="pre">Headers</span> <span class="pre">to</span> <span class="pre">Client'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'raise</span> <span class="pre">Exception'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server.Auth.route" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a Flask endpoint which decrypts the data being received by the endpoint as headers and encrypts the data being sent by the endpoint as data to the client.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul>
+<li><p>rule: <cite>str</cite> (The endpoint)</p></li>
+<li><p>headers_to_accept: <cite>list[str]</cite> (The headers to receive and decrypt)</p></li>
+<li><p>key_not_found: (The action to perform when a key in <cite>headers_to_accept</cite> is not found in the request headers)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>set value to None</cite>: Sets the corresponding key value to <cite>None</cite></p></li>
+<li><p><cite>return Invalid Headers to Client</cite>: Returns an <cite>Invalid Headers 400</cite> error to the client</p></li>
+<li><p><cite>raise Exception</cite>: Raises an <cite>Exception</cite> and returns status code <cite>500</cite> to the client.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>include_token: <cite>bool</cite> (Indicates whether the token is to be included in the final headers or not)</p></li>
+</ul>
+</div></blockquote>
+<p>Note: The view function when using <cite>&#64;server.route</cite> should ALWAYS have the following three parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>headers: <cite>dict</cite> (Contains the decrypted headers)</p></li>
+<li><p><a href="#id1"><span class="problematic" id="id2">*</span></a>args: <cite>tuple</cite> (Contains the positional arguments passed to the view function when using <cite>&#64;app.route</cite>)</p></li>
+<li><p><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: <cite>dict</cite> (Contains the keyword arguments passed to the view function when using <cite>&#64;app.route</cite>)</p></li>
+</ul>
+</div></blockquote>
+<p>Note: The output of the view function of <cite>&#64;server.route</cite> should always be a <cite>dict</cite> serialized to a <cite>str</cite> (preferrably using <cite>json.dumps</cite>). All the keys and values of the original dict should be <cite>str</cite>.</p>
+<p>Example 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ServerAuth</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">ServerAuth</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="o">=</span><span class="n">token_file</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_auth_routes</span><span class="p">()</span>
+<span class="nd">@server</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers_to_accept</span><span class="o">=</span><span class="n">headers_to_accept</span><span class="p">,</span> <span class="n">key_not_found</span><span class="o">=</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;set value to None&#39;</span><span class="p">,</span> <span class="s1">&#39;return Invalid Headers to Client&#39;</span><span class="p">,</span> <span class="s1">&#39;raise Exception&#39;</span><span class="p">],</span> <span class="n">include_token</span><span class="o">=</span><span class="n">include_token</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># The view function always has to have the given three parameters.</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1">#Each value of each key in the data (dict) variable should be a string.</span>
+</pre></div>
+</div>
+<p>Example 2:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ServerAuth</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">ServerAuth</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="o">=</span><span class="n">token_file</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_auth_routes</span><span class="p">()</span>
+<span class="nd">@server</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="s2">&quot;/&lt;param&gt;&quot;</span><span class="p">,</span> <span class="n">headers_to_accept</span><span class="o">=</span><span class="n">headers_to_accept</span><span class="p">,</span> <span class="n">key_not_found</span><span class="o">=</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;set value to None&#39;</span><span class="p">,</span> <span class="s1">&#39;return Invalid Headers to Client&#39;</span><span class="p">,</span> <span class="s1">&#39;raise Exception&#39;</span><span class="p">],</span> <span class="n">include_token</span><span class="o">=</span><span class="n">include_token</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># The view function always has to have the given three parameters.</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1">#Each value of each key in the data (dict) variable should be a string.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server.Auth.update_logs">
+<span class="sig-name descname"><span class="pre">update_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server.Auth.update_logs" title="Permalink to this definition">#</a></dt>
+<dd><p>Updates the logs with the given log entry.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>entry: <cite>str</cite> (The log entry to record)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server</span> <span class="kn">import</span> <span class="n">Auth</span> <span class="k">as</span> <span class="n">ServerAuth</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">ServerAuth</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">token_file</span><span class="o">=</span><span class="n">token_file</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">enable_logs</span><span class="p">(</span><span class="n">log_file</span><span class="o">=</span><span class="n">log_file</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">update_logs</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-HTTPAuth.server_utils">
+<span id="httpauth-server-utils-module"></span><h2>HTTPAuth.server_utils module<a class="headerlink" href="#module-HTTPAuth.server_utils" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.CA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HTTPAuth.server_utils.</span></span><span class="sig-name descname"><span class="pre">CA</span></span><a class="headerlink" href="#HTTPAuth.server_utils.CA" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Acts as the CA for server and client certificate generation.</p>
+<p>Not meant to be imported for use aside from inside the module.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.CA.create_client_certificate">
+<span class="sig-name descname"><span class="pre">create_client_certificate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client_public_key_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server_utils.CA.create_client_certificate" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a certificate for the Client.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>public_key_bytes: <cite>bytes</cite> (The client’s public key in <cite>bytes</cite>)</p></li>
+<li><p>name: <cite>str</cite> (Name of the client)</p></li>
+<li><p>location: <cite>str</cite> (Location of the client)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server_utils.ca</span> <span class="kn">import</span> <span class="n">CA</span>
+<span class="n">ca</span> <span class="o">=</span> <span class="n">CA</span><span class="p">()</span>
+<span class="n">client_certificate</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">create_client</span><span class="p">(</span><span class="n">public_key_bytes</span><span class="o">=</span><span class="n">public_key_bytes</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.CA.create_server_certificate">
+<span class="sig-name descname"><span class="pre">create_server_certificate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">public_key_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#HTTPAuth.server_utils.CA.create_server_certificate" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a certificate for the Server.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>public_key_bytes: <cite>bytes</cite> (The server’s public key in <cite>bytes</cite>)</p></li>
+<li><p>name: <cite>str</cite> (Name of the server)</p></li>
+<li><p>location: <cite>str</cite> (Location of the server)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server_utils.ca</span> <span class="kn">import</span> <span class="n">CA</span>
+<span class="n">ca</span> <span class="o">=</span> <span class="n">CA</span><span class="p">()</span>
+<span class="n">server_certificate</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">create_server_certificate</span><span class="p">(</span><span class="n">public_key_bytes</span><span class="o">=</span><span class="n">public_key_bytes</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HTTPAuth.server_utils.</span></span><span class="sig-name descname"><span class="pre">ExtraUtils</span></span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for extra server utilities</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils.form_raw_data">
+<span class="sig-name descname"><span class="pre">form_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symmetric_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expiry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_tokens_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenfile</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils.form_raw_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Forms encrypted raw data from the loaded raw data.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>token: <cite>str</cite> (The user token)</p></li>
+<li><p>symmetric_key: <cite>bytes</cite> (The symmetric key of the user token)</p></li>
+<li><p>expiry: <cite>str</cite> (The expiry date of the user token)</p></li>
+<li><p>load_tokens_func: <cite>function</cite> (The function assigned to load the tokens)</p></li>
+<li><p>tokenfile: <cite>str</cite> (The file path where the user tokens are stored)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils.generate_session_token">
+<span class="sig-name descname"><span class="pre">generate_session_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils.generate_session_token" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates a session token of desired length.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>length: <cite>int</cite> (The desired length of the session token)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils.load_raw_data">
+<span class="sig-name descname"><span class="pre">load_raw_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils.load_raw_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Default function to load raw data from the token file.</p>
+<p>Can be replaced with a custom function to load raw data while intializing <cite>Server</cite> object.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>tokenfile: <cite>str</cite> (The file path where the user tokens are stored.)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils.save_token">
+<span class="sig-name descname"><span class="pre">save_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils.save_token" title="Permalink to this definition">#</a></dt>
+<dd><p>Default function to save tokens to the token file.</p>
+<p>Can be replaced with a custom function to save tokens while intializing <cite>Server</cite> object.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>tokenfile: <cite>str</cite> (The file path where the user tokens are stored.)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils.validate_client_certificate">
+<span class="sig-name descname"><span class="pre">validate_client_certificate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#HTTPAuth.server_utils.Server" title="HTTPAuth.server_utils.Server"><span class="pre">Server</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils.validate_client_certificate" title="Permalink to this definition">#</a></dt>
+<dd><p>Validates the client certificate</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>certificate: <cite>dict[str, str]</cite> (The decrypted client certificate in the form of a <cite>dict</cite>)</p></li>
+<li><p>server: <cite>Server</cite> (The initialized <cite>Server</cite> object)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.ExtraUtils.validate_loaded_raw_data">
+<span class="sig-name descname"><span class="pre">validate_loaded_raw_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server_utils.ExtraUtils.validate_loaded_raw_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Validates the raw data loaded.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>raw_data: <cite>dict</cite> (The raw data.)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.Server">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HTTPAuth.server_utils.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HTTPAuth.server_utils.Server" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initializes the server.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HTTPAuth.server_utils.Server.create_certificate">
+<span class="sig-name descname"><span class="pre">create_certificate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_public_key_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HTTPAuth.server_utils.Server.create_certificate" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a certificate for the server from the CA.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>server_public_key_bytes: <cite>bytes</cite> (The server’s public key in <cite>bytes</cite>)</p></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">HTTPAuth.server_utils.server</span> <span class="kn">import</span> <span class="n">Server</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">()</span>
+<span class="n">server</span><span class="o">.</span><span class="n">create_certificate</span><span class="p">(</span><span class="n">server_public_key_bytes</span><span class="o">=</span><span class="n">server_public_key_bytes</span><span class="p">)</span>            
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-HTTPAuth">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-HTTPAuth" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth.client">HTTPAuth.client module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth"><code class="docutils literal notranslate"><span class="pre">Auth</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.auth"><code class="docutils literal notranslate"><span class="pre">Auth.auth()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.load_session"><code class="docutils literal notranslate"><span class="pre">Auth.load_session()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.make_request"><code class="docutils literal notranslate"><span class="pre">Auth.make_request()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.client.Auth.save_session"><code class="docutils literal notranslate"><span class="pre">Auth.save_session()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth.server">HTTPAuth.server module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth"><code class="docutils literal notranslate"><span class="pre">Auth</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.disable_logs"><code class="docutils literal notranslate"><span class="pre">Auth.disable_logs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.enable_logs"><code class="docutils literal notranslate"><span class="pre">Auth.enable_logs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.register_auth_routes"><code class="docutils literal notranslate"><span class="pre">Auth.register_auth_routes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.route"><code class="docutils literal notranslate"><span class="pre">Auth.route()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server.Auth.update_logs"><code class="docutils literal notranslate"><span class="pre">Auth.update_logs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth.server_utils">HTTPAuth.server_utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.CA"><code class="docutils literal notranslate"><span class="pre">CA</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.CA.create_client_certificate"><code class="docutils literal notranslate"><span class="pre">CA.create_client_certificate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.CA.create_server_certificate"><code class="docutils literal notranslate"><span class="pre">CA.create_server_certificate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils"><code class="docutils literal notranslate"><span class="pre">ExtraUtils</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.form_raw_data"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.form_raw_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.generate_session_token"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.generate_session_token()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.load_raw_data"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.load_raw_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.save_token"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.save_token()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.validate_client_certificate"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.validate_client_certificate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.ExtraUtils.validate_loaded_raw_data"><code class="docutils literal notranslate"><span class="pre">ExtraUtils.validate_loaded_raw_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.Server"><code class="docutils literal notranslate"><span class="pre">Server</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#HTTPAuth.server_utils.Server.create_certificate"><code class="docutils literal notranslate"><span class="pre">Server.create_certificate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-HTTPAuth">Module contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Evscion
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023, Evscion.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
