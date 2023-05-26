@@ -126,7 +126,7 @@ class Server:
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.PKCS1
         )
-        self.certificate: dict[str, str] = None
+        self.certificate: dict = None
         self.ca = CA()
         self.name = name
         self.location = location
@@ -149,7 +149,7 @@ class Server:
 
 class ExtraUtils:
     """ Base class for extra server utilities """
-    def validate_client_certificate(certificate: dict[str, str], server: Server):
+    def validate_client_certificate(certificate: dict, server: Server):
         """ Validates the client certificate\n
 
             Parameters:\n
