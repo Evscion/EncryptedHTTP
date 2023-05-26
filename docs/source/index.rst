@@ -52,6 +52,7 @@ server.py:
    |   if __name__ == "__main__":
    |      app.run()
 
+
 client.py:
 
    |   from HTTPAuth.client import Auth as ClientAuth
