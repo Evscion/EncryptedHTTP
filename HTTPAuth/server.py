@@ -1,5 +1,3 @@
-# Too lazy to write comments for explaining stuff so read the documentation.
-
 from flask import Flask, request, make_response
 from cryptography.fernet import Fernet as fer
 from cryptography.hazmat.primitives.asymmetric import padding
