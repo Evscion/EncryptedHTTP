@@ -1,4 +1,5 @@
 requests>=2.27.0
 cryptography>=38.0.3
+typing>=3.10.0.0
 flask>=2.0.3
 sphinx-book-theme >=1.0.0
