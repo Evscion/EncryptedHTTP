@@ -24,7 +24,7 @@ A few problems yet to fixed in the HTTPAuth package are as follows:
 
 server.py:
 
-`
+```
 from flask import Flask
 from HTTPAuth.server import Auth as ServerAuth
  
@@ -40,11 +40,11 @@ def home(headers, *args, **kwargs):
 
 if __name__ == “__main__”:
   app.run()
-`
+```
 
 client.py:
 
-`
+```
 from HTTPAuth.client import Auth as ClientAuth
 
 client = ClientAuth(url=”server_url”, session_file=”./session.json”)
@@ -53,13 +53,13 @@ client.auth(name=”Client”, location=”US”)
 headers = {‘key’: ‘val’}
 
 response: dict = client.make_request(method=’GET’, endpoint=”/”, headers=headers)
-`  
+```
 
 **Usage 2**
 
 server.py:
 
-`
+```
 from flask import Flask
 from HTTPAuth.server import Auth as ServerAuth
  
@@ -76,11 +76,11 @@ def home(headers, *args, **kwargs):
 
 if __name__ == “__main__”:
   app.run()
-`
+```
 
 client.py:
 
-`
+```
 from HTTPAuth.client import Auth as ClientAuth
 
 client = ClientAuth(url=”server_url”, session_file=”./session.json”)
@@ -89,7 +89,7 @@ client.auth(name=”Client”, location=”US”)
 headers = {‘key’: ‘val’}
 
 response: dict = client.make_request(method=’GET’, endpoint=”/value”, headers=headers)
-`  
+```
 
 **Documentation**
 For detailed documentation and examples, please refer to the HTTPAuth documentation at https://httpauth.readthedocs.io/en/latest/.
