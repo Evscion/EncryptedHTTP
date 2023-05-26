@@ -1,0 +1,5 @@
+version: 2
+build:
+  image: latest
+  formats: [html]
+  path: docs/_build/html
