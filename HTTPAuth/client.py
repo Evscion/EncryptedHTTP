@@ -6,7 +6,11 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from base64 import b64encode, b64decode
 from hashlib import sha256
-from typing import Literal
+
+try:
+    from typing import Literal
+except Exception:
+    from typing_extension import Literal
 
 class Auth:
     """ Base Class for Client-Side Authentication.\n
