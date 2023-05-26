@@ -1,4 +1,3 @@
 version: 2
-build:
-  formats: all
-  path: docs/_build/html
+formats: all
+path: docs/_build/html
