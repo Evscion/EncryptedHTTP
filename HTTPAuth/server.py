@@ -3,7 +3,6 @@ from cryptography.fernet import Fernet as fer
 from cryptography.hazmat.primitives.asymmetric import padding
 from base64 import b64encode, b64decode
 import time
-from typing import Literal
 from HTTPAuth.server_utils import Server as Util_Server
 from HTTPAuth.server_utils import ExtraUtils
 import json
@@ -308,7 +307,7 @@ class Auth:
         self.__log_file = None
         self.__print_logs = False
 
-    def route(self, rule: str, headers_to_accept: list[str], key_not_found: Literal['set value to None', 'return Invalid Headers to Client', 'raise Exception'], include_token: bool = False, **options):
+    def route(self, rule: str, headers_to_accept: list[str], key_not_found, include_token: bool = False, **options):
         """ Creates a Flask endpoint which decrypts the data being received by the endpoint as headers and encrypts the data being sent by the endpoint as data to the client.\n
 
             Parameters:\n
