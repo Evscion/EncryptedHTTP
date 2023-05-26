@@ -1,0 +1,10 @@
+requests>=2.27.0
+json
+cryptography>=38.0.3
+base64
+hashlib
+typing
+time
+string
+random
+flask>=2.0.3
