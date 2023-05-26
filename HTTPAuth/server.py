@@ -5,10 +5,14 @@ from cryptography.fernet import Fernet as fer
 from cryptography.hazmat.primitives.asymmetric import padding
 from base64 import b64encode, b64decode
 import time
-from typing import Literal
 from HTTPAuth.server_utils import Server as Util_Server
 from HTTPAuth.server_utils import ExtraUtils
 import json
+
+try:
+    from typing import Literal
+except Exception:
+    from typing_extensions import Literal
 
 class Auth:
     """ Base class for Server-Side HTTP Authentication.\n
