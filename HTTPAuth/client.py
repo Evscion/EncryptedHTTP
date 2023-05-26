@@ -35,7 +35,7 @@ class Auth:
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.PKCS1
         )
-        self.certificate = None
+        self.certificate: dict = None
         self.server_public_key: rsa.RSAPublicKey = None
         self.encryption_key: bytes = None
         self.token: str = None
@@ -53,7 +53,7 @@ class Auth:
         certificate_encoded: str = response_dict.get("Certificate")
         certificate_bytes = b64decode(certificate_encoded)
 
-        certificate_dict = json.loads(certificate_bytes)
+        certificate_dict: dict = json.loads(certificate_bytes)
 
         server_public_key_str = certificate_dict['Public Key']
         server_public_key_bytes = b64decode(server_public_key_str)
@@ -64,7 +64,7 @@ class Auth:
 
         return certificate_dict
 
-    def __verify_server_certificate(self, server_certificate):
+    def __verify_server_certificate(self, server_certificate: dict):
         """ Internal Method to Verify Server Certificate.\n
 
             Parameters:\n
@@ -147,7 +147,7 @@ class Auth:
         certificate_encoded: str = response_dict.get("Certificate")
         certificate_bytes = b64decode(certificate_encoded)
 
-        certificate_dict = json.loads(certificate_bytes)
+        certificate_dict: dict = json.loads(certificate_bytes)
 
         self.certificate = certificate_dict
 
