@@ -1,7 +1,0 @@
-ca module
-=========
-
-.. automodule:: ca
-   :members:
-   :undoc-members:
-   :show-inheritance:
