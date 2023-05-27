@@ -64,6 +64,12 @@ client.py:
    |   headers = {'key': 'val'}
    |   
    |   response: dict = client.make_request(method='GET', endpoint="/", headers=headers)
+   
+   
+Contact
+==================
+
+   For any problems/difficulties please contact me on my mail - ivoscev@gmail.com or discord - Ivosce#2910
 
 
 Contents
@@ -83,8 +89,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-Contact
-==================
-
-   For any problems/difficulties please contact me on my mail - ivoscev@gmail.com or discord - Ivosce#2910
