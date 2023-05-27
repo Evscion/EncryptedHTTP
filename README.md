@@ -18,7 +18,8 @@ A few problems yet to fixed in the HTTPAuth package are as follows:
 
 # Installation
 
-The repository should be cloned for installation but soon will be available on pip.
+The HTTPAuth package can be installed by cloning the repository.
+It will soon be available for installation on `pip`.
 
 # Usage
 
@@ -103,4 +104,4 @@ This package is released under the MIT License. See the LICENSE file for more in
 
 # Contact
 
-For any problems please contact me on my discord - Ivosce#2910 or mail - ivoscev@gmail.com
+For any problems/difficulties please contact me on my mail - ivoscev@gmail.com or discord - Ivosce#2910
