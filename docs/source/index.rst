@@ -29,7 +29,8 @@ A few problems yet to fixed in the HTTPAuth package are as follows:
 Installation
 ------------
 
-   $ pip install HTTPAuth
+   The HTTPAuth package can be installed by cloning the github repository at https://github.com/Evscion/HTTPAuth.
+   It will soon be available for installation on `pip`.
 
 Usage
 -----
@@ -82,3 +83,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Contact
+==================
+
+   For any problems/difficulties please contact me on my mail - ivoscev@gmail.com or discord - Ivosce#2910
