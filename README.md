@@ -1,5 +1,5 @@
-# HTTPAuth-Documentation
-Documentation for the HTTPAuth Package.
+# HTTPAuth
+A secure encrypted way for a server to communicate to a local client without HTTPS.
 
 # Introduction
 
