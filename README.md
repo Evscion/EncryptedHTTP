@@ -16,6 +16,8 @@ A few problems yet to fixed in the HTTPAuth package are as follows:
 3. Limited Authentication Mechanisms _(Planned to Fix)_
 4. Susceptibility to Man-in-the-middle Attacks and Impersonations
 
+The above problems will be looked upon in the next update.
+
 # Installation
 
 The HTTPAuth package can be installed by cloning the repository.
