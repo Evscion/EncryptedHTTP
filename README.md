@@ -20,8 +20,7 @@ The above problems will be looked upon in the next update.
 
 # Installation
 
-The EncryptedHTTP package can be installed by cloning the repository.
-It will soon be available for installation on `pip`.
+`$ pip install EncryptedHTTP`
 
 # Usage
 
