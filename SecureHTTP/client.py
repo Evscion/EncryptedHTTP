@@ -10,7 +10,7 @@ from hashlib import sha256
 class Auth:
     """ Base Class for Client-Side Authentication.\n
     
-        This module is to be used for authentication requests to a server which uses/supports `SecureHTTP.server` 
+        This module is to be used for authentication requests to a server which uses/supports `SecureHTTPComm.server` 
 
         Parameters:\n
               • url: `str` (The URL of the server)
@@ -19,7 +19,7 @@ class Auth:
     def __init__(self, url: str, session_file: str):
         """ Base Class for Client-Side Authentication.\n
 
-            Is to be used for authentication requests to a server which uses/supports `SecureHTTP.server`\n
+            Is to be used for authentication requests to a server which uses/supports `SecureHTTPComm.server`\n
 
             Parameters:\n
               • url: `str` (The URL of the server)\n
@@ -162,7 +162,7 @@ class Auth:
               • `None`\n
 
             Example::\n
-              from SecureHTTP.client import Auth as ClientAuth
+              from SecureHTTPComm.client import Auth as ClientAuth
               client = ClientAuth(url, session_file)
               client.auth(name, location)
          """
@@ -222,7 +222,7 @@ class Auth:
               • `None`\n
             
             Example::\n
-              from SecureHTTP.client import Auth as ClientAuth
+              from SecureHTTPComm.client import Auth as ClientAuth
               client = ClientAuth(url, session_file)
               # Optional: Authorize the client using `client.auth()`
               client.save_session(passphrase)
@@ -268,7 +268,7 @@ class Auth:
               • `None`
 
             Example::\n
-              from SecureHTTP.client import Auth as ClientAuth
+              from SecureHTTPComm.client import Auth as ClientAuth
               client = ClientAuth(url, session_file)
               client.load_session()
         """
@@ -318,7 +318,7 @@ class Auth:
               • `dict[str, str]`
             
             Example::\n
-                from SecureHTTP.client import Auth as ClientAuth
+                from SecureHTTPComm.client import Auth as ClientAuth
                 client = ClientAuth(url, session_file)
                 client.auth(name, location)
                 response: dict = client.make_request('GET', endpoint, headers)
