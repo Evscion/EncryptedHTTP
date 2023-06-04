@@ -1,7 +1,7 @@
-SecureHTTP
+EncryptedHTTP
 ========
 
 .. toctree::
    :maxdepth: 4
 
-   SecureHTTP
+   EncryptedHTTP
