@@ -29,8 +29,8 @@ A few problems yet to fixed in the EncryptedHTTP package are as follows:
 Installation
 ------------
 
-   The EncryptedHTTP package can be installed by cloning the github repository at https://github.com/Evscion/EncryptedHTTP.
-   It will soon be available for installation on `pip`.
+   
+   $ pip install EncryptedHTTP
 
 Usage
 -----
