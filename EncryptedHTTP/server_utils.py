@@ -34,7 +34,7 @@ class CA:
               • `dict[str]`\n
 
             Example::\n
-              from SecureHTTP.server_utils.ca import CA
+              from EncryptedHTTP.server_utils.ca import CA
               ca = CA()
               server_certificate = ca.create_server_certificate(public_key_bytes=public_key_bytes, name, location)
         """
@@ -80,7 +80,7 @@ class CA:
               • `dict[str]`\n
 
             Example::\n
-              from SecureHTTP.server_utils.ca import CA
+              from EncryptedHTTP.server_utils.ca import CA
               ca = CA()
               client_certificate = ca.create_client(public_key_bytes=public_key_bytes, name, location)
         """
@@ -141,7 +141,7 @@ class Server:
               • `None`
 
             Example::\n
-              from SecureHTTP.server_utils.server import Server
+              from EncryptedHTTP.server_utils.server import Server
               server = Server()
               server.create_certificate(server_public_key_bytes=server_public_key_bytes)            
         """
