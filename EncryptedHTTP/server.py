@@ -3,14 +3,14 @@ from cryptography.fernet import Fernet as fer
 from cryptography.hazmat.primitives.asymmetric import padding
 from base64 import b64encode, b64decode
 import time
-from SecureHTTP.server_utils import Server as Util_Server
-from SecureHTTP.server_utils import ExtraUtils
+from EncryptedHTTP.server_utils import Server as Util_Server
+from EncryptedHTTP.server_utils import ExtraUtils
 import json
 
 class Auth:
     """ Base class for Server-Side HTTP Authentication.\n
 
-        This module is to be used for processing authentication requests sent by a client which uses/supports `SecureHTTP.client`
+        This module is to be used for processing authentication requests sent by a client which uses/supports `EncryptedHTTP.client`
     
         Parameters:\n
               • app: `Flask` (The Flask App)\n
@@ -34,7 +34,7 @@ class Auth:
     def __init__(self, app, store_tokens_func = ExtraUtils.save_token, load_tokens_func = ExtraUtils.load_raw_data, token_file: str = None, server_name: str = "Flask Test Server", server_location: str = "None") -> None:
         """ Base class for Server-Side HTTP Authentication.\n
 
-            Is to be used for processing authentication requests sent by a client which uses/supports `SecureHTTP.client`
+            Is to be used for processing authentication requests sent by a client which uses/supports `EncryptedHTTP.client`
         
             Parameters:\n
               • app: `Flask` (The Flask App)\n
@@ -72,7 +72,7 @@ class Auth:
               • `None`
 
             Example::\n
-                from SecureHTTP.server import Auth as ServerAuth
+                from EncryptedHTTP.server import Auth as ServerAuth
                 from flask import Flask
                 app = Flask(__name__)
                 server = ServerAuth(app=app, token_file=token_file)
@@ -97,14 +97,14 @@ class Auth:
     """ Base class for Server-Side Authentication """
     def register_auth_routes(self):
         """ Registers the endpoints/routes for client authentication in the server side.\n
-            Is to be used for processing authentication requests sent by a client using `SecureHTTP.client`.\n
+            Is to be used for processing authentication requests sent by a client using `EncryptedHTTP.client`.\n
 
             Returns:\n
               • `None`
 
             Example::\n
                 from flask import Flask
-                from SecureHTTP.server import Auth as ServerAuth
+                from EncryptedHTTP.server import Auth as ServerAuth
                 app = Flask(__name__)
                 token_file = './tokens.json'
                 server = ServerAuth(app=app, token_file=token_file)
@@ -260,7 +260,7 @@ class Auth:
               • `None`\n
 
             Example::\n
-                from SecureHTTP.server import Auth as ServerAuth
+                from EncryptedHTTP.server import Auth as ServerAuth
                 from flask import Flask
                 app = Flask(__name__)
                 server = ServerAuth(app=app, token_file=token_file)
@@ -289,7 +289,7 @@ class Auth:
               • `None`
 
             Example::\n
-                from SecureHTTP.server import Auth as ServerAuth
+                from EncryptedHTTP.server import Auth as ServerAuth
                 from flask import Flask
                 app = Flask(__name__)
                 server = ServerAuth(app=app, token_file=token_file)
@@ -332,7 +332,7 @@ class Auth:
               • kwargs: `dict`
             
             Example 1::\n
-                from SecureHTTP.server import Auth as ServerAuth
+                from EncryptedHTTP.server import Auth as ServerAuth
                 from flask import Flask
                 app = Flask(__name__)
                 server = ServerAuth(app=app, token_file=token_file)
@@ -343,7 +343,7 @@ class Auth:
                     return json.dumps(data) #Each value of each key in the data (dict) variable should be a string.
 
             Example 2::\n
-                from SecureHTTP.server import Auth as ServerAuth
+                from EncryptedHTTP.server import Auth as ServerAuth
                 from flask import Flask
                 app = Flask(__name__)
                 server = ServerAuth(app=app, token_file=token_file)
