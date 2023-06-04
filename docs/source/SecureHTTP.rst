@@ -1,29 +1,29 @@
-SecureHTTP package
+EncryptedHTTP package
 ================
 
 Submodules
 ----------
 
-SecureHTTP.client module
+EncryptedHTTP.client module
 ----------------------
 
-.. automodule:: SecureHTTP.client
+.. automodule:: EncryptedHTTP.client
    :members:
    :undoc-members:
    :show-inheritance:
 
-SecureHTTP.server module
+EncryptedHTTP.server module
 ----------------------
 
-.. automodule:: SecureHTTP.server
+.. automodule:: EncryptedHTTP.server
    :members:
    :undoc-members:
    :show-inheritance:
 
-SecureHTTP.server\_utils module
+EncryptedHTTP.server\_utils module
 -----------------------------
 
-.. automodule:: SecureHTTP.server_utils
+.. automodule:: EncryptedHTTP.server_utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ SecureHTTP.server\_utils module
 Module contents
 ---------------
 
-.. automodule:: SecureHTTP
+.. automodule:: EncryptedHTTP
    :members:
    :undoc-members:
    :show-inheritance:
