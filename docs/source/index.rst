@@ -1,24 +1,24 @@
-.. SecureHTTP documentation master file, created by
+.. EncryptedHTTP documentation master file, created by
    sphinx-quickstart on Fri May 26 14:22:42 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the Documentation for SecureHTTP
+Welcome to the Documentation for EncryptedHTTP
 ====================================
 
 Introduction
 ------------
 
-The SecureHTTP package is designed to provide a secure and encrypted communication channel between a server and a local client using the HTTP protocol. Inspired by the principles of HTTPS, this package imitates its functionality to ensure confidentiality and integrity of data transmitted over an insecure network.
-By leveraging cryptographic algorithms and secure authentication mechanisms, SecureHTTP enables developers to establish a trusted connection between the server and client, protecting sensitive information from unauthorized access and tampering.
-The SecureHTTP package uses strong encryption methods to ensure that data transferred between a server and a local client cannot be accessed by a third-party.
+The EncryptedHTTP package is designed to provide a secure and encrypted communication channel between a server and a local client using the HTTP protocol. Inspired by the principles of HTTPS, this package imitates its functionality to ensure confidentiality and integrity of data transmitted over an insecure network.
+By leveraging cryptographic algorithms and secure authentication mechanisms, EncryptedHTTP enables developers to establish a trusted connection between the server and client, protecting sensitive information from unauthorized access and tampering.
+The EncryptedHTTP package uses strong encryption methods to ensure that data transferred between a server and a local client cannot be accessed by a third-party.
 
 Precautions
 -----------
 
-While SecureHTTP enhances security within the confines of the HTTP protocol, it’s important to remember that it does not offer the same level of security as the established HTTPS standard, which provides additional safeguards against various attacks and ensures trust through certificate authorities.
+While EncryptedHTTP enhances security within the confines of the HTTP protocol, it’s important to remember that it does not offer the same level of security as the established HTTPS standard, which provides additional safeguards against various attacks and ensures trust through certificate authorities.
 
-A few problems yet to fixed in the SecureHTTP package are as follows:
+A few problems yet to fixed in the EncryptedHTTP package are as follows:
 
    1. Lack of Server-Side Storage Security *(Is replaceable with custom Server-Side Storage Functions)*
    2. Lack of Session Management *(Planned to Fix)*
@@ -29,7 +29,7 @@ A few problems yet to fixed in the SecureHTTP package are as follows:
 Installation
 ------------
 
-   The SecureHTTP package can be installed by cloning the github repository at https://github.com/Evscion/SecureHTTP.
+   The EncryptedHTTP package can be installed by cloning the github repository at https://github.com/Evscion/EncryptedHTTP.
    It will soon be available for installation on `pip`.
 
 Usage
@@ -38,7 +38,7 @@ Usage
 server.py:
 
    |   from flask import Flask
-   |   from SecureHTTP.server import Auth as ServerAuth
+   |   from EncryptedHTTP.server import Auth as ServerAuth
    |   
    |   app = Flask(__name__)
    |   server = ServerAuth(app=app, token_file="./tokens.json", server_name="Test Server", server_location="US")
@@ -56,7 +56,7 @@ server.py:
 
 client.py:
 
-   |   from SecureHTTP.client import Auth as ClientAuth
+   |   from EncryptedHTTP.client import Auth as ClientAuth
    |   
    |   client = ClientAuth(url="*server_url*", session_file="./session.json")
    |   client.auth(name="Client", location="US")
@@ -79,7 +79,7 @@ Contents
    :maxdepth: 2
    :caption: Package:
 
-   SecureHTTP
+   EncryptedHTTP
 
 
 
