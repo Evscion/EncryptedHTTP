@@ -1,29 +1,29 @@
-HTTPAuth package
+SecureHTTP package
 ================
 
 Submodules
 ----------
 
-HTTPAuth.client module
+SecureHTTP.client module
 ----------------------
 
-.. automodule:: HTTPAuth.client
+.. automodule:: SecureHTTP.client
    :members:
    :undoc-members:
    :show-inheritance:
 
-HTTPAuth.server module
+SecureHTTP.server module
 ----------------------
 
-.. automodule:: HTTPAuth.server
+.. automodule:: SecureHTTP.server
    :members:
    :undoc-members:
    :show-inheritance:
 
-HTTPAuth.server\_utils module
+SecureHTTP.server\_utils module
 -----------------------------
 
-.. automodule:: HTTPAuth.server_utils
+.. automodule:: SecureHTTP.server_utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ HTTPAuth.server\_utils module
 Module contents
 ---------------
 
-.. automodule:: HTTPAuth
+.. automodule:: SecureHTTP
    :members:
    :undoc-members:
    :show-inheritance:
