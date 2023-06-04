@@ -1,7 +1,7 @@
-HTTPAuth
+SecureHTTP
 ========
 
 .. toctree::
    :maxdepth: 4
 
-   HTTPAuth
+   SecureHTTP
